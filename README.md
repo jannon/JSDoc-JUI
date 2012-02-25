@@ -38,6 +38,7 @@ https://github.com/jannon/JSDoc-JUI
 
 Whether you cloned the repo or downloaded an archive, you should see the following
 partial directory structure:
+
     plugins
       \-jquery-ui-widget.js
     templates
@@ -80,6 +81,7 @@ First, a look at documentation produced by the template.  Check out the [JUI doc
 The template creates documentation the mimics the look and feel of the standard [jQuery UI documentation] (http://jqueryui.com/demos)
 
 Okay, now here are the relevant things to make that happen:
+
 - The File
 - The Widget
 - Options
@@ -143,8 +145,8 @@ makes assumptions that we're talking about requiring node modules or something w
 
 If ```@samplemarkup``` is present, the theming tab in the widget documentation will contain some extra info
 including the sample markup provided
-  
-### Options ### 
+
+### Options ###
 
 You don't really need a comment for the options object itself, since the options object is a standard 
 jQuery UI convention.  You can include one, but it doesn't get shown anyhwere in the documentation.
@@ -170,7 +172,7 @@ or you could include extra stuff:
 
 Both of those will produce the same documentation
 
-### Methods ### 
+### Methods ###
 
 The comments for the widget methods like _create, destroy, and all your custom methods
 are just documented like any function, specifying parameters and return types and 
@@ -193,7 +195,7 @@ things:
         throw kryptonite;
     }
 
-### Events ### 
+### Events ###
 
 If you don't add anything about events in your code, the documentation will still 
 display what events are triggered in the code.  It finds all of the ```this._trigger(...)```
@@ -220,7 +222,7 @@ The name should be specified as above, to provide both the name and the widget i
 
 The ```@param``` tags specify the parameters that callbacks listening to the event will receive
 
-### Demos ### 
+### Demos ###
 
 Everybody likes a demo! Like events, the comment blocks for demos are just placed somewhere at the bottom of the file.  
 A demo comment might look like this:
@@ -257,10 +259,10 @@ to be done this way for JSDoc3 to create the filenames and links properly.
 See Also
 --------
 
-JUI Documentation: http://jannon.net/jui
-JUI Source Code: https://github.com/jannon/JUI
-Required JSDoc3 Fork: https://github.com/jannon/jsdoc
-Original JSDoc3 Project: https://github.com/micmath/jsdoc  
+- JUI Documentation: http://jannon.net/jui
+- JUI Source Code: https://github.com/jannon/JUI
+- Required JSDoc3 Fork: https://github.com/jannon/jsdoc
+- Original JSDoc3 Project: https://github.com/micmath/jsdoc  
 
 License
 -------
