@@ -1,0 +1,54 @@
+<?js
+    var doc = this.doc;
+    this.methods.forEach(function(n, i) {
+        var access = n.access || '';
+?>  
+    <li id="method-<?js= n.name ?>" class="method <?js= access ?>">
+        <div class="method-header">
+            <h3 class="method-name"><a href="#method-<?js= n.name ?>"><?js= n.name ?></a></h3>
+            <dl>
+                <dt class="method-signature-label">Signature:</dt>
+                <dd class="method-signature">
+                    <?js
+                        if (access === "private") {
+                            print('<span class="type-sig">&lt;private&gt;</span>');
+                        } else {
+                            print('.' + doc.name + n.signature);
+                        }
+                    ?>
+                </dd>
+            </dl>
+        </div>
+        <div class="method-description">
+            <p><?js= (n.description && n.description.replace( new RegExp( "\n\n", "g" ), '<br><br>')) ?></p>
+            <?js
+                if (n.params && n.params.length) {
+                    print('<h4>Parameters:</h4>');
+                    print( render('params.tmpl', n.params) );
+                }
+                if (n.returns && n.returns.length) {        
+                    var rdesc = [];
+                    n.returns.forEach(function(r) {
+                        var str = "";
+                        if (r.type && r.type.names && r.type.names.length) { str += '<span class="return-type">' + r.type.names[0] + '</span>'; }
+                        if (r.description) { str += '<span class="return-desc">' + r.description + '</span>'; }
+                        if (str) { rdesc.push(str); }
+                    });
+                    
+                    if (rdesc.length) {
+                        print('<h5>Returns:</h5>');
+                        print('<p class="returns">'+rdesc.join('</p><p>')+'</p>');
+                    }
+                }
+             ?>
+        </div>
+        <?js
+            if (n.examples && n.examples.length) {
+                print('<h4>Code example' + (n.examples.length > 1? 's':'') + '</h4>');
+                print( render('examples.tmpl', n.examples) );
+            }
+        ?>
+    </li>
+<?js
+    });
+?>

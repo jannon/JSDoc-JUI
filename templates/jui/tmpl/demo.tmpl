@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title><?js= (getFileDoclet(docs[0]) && getFileDoclet(docs[0]).summary) ?> - <?js= docs[0].demo.name ?></title>
+    <style type="text/css" media="screen">
+        @import "media/css/jquery-ui.css";
+        @import "media/css/<?js= (getFileDoclet(docs[0]) && getFileDoclet(docs[0]).meta.filename.replace('js', 'css')) ?>";
+    </style>
+    <script type="text/javascript" src="media/js/jquery.js"></script>
+    <script type="text/javascript" src="media/js/jquery-ui.js"></script>
+    
+    <script type="text/javascript" src="media/js/<?js= (getFileDoclet(docs[0]) && getFileDoclet(docs[0]).meta.filename) ?>"></script>
+    <script>
+    <?js= docs[0].demo.script ?>
+    </script>
+</head>
+<body>
+
+<?js= docs[0].demo.markup ?>
+
+<div class="demo-description">
+<p><?js= docs[0].description ?></p>
+</div>
+
+</body>
+</html>

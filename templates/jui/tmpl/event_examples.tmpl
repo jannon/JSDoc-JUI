@@ -1,0 +1,25 @@
+<div class="event-examples">
+    <h4>Code examples</h4>
+    <dl class="event-examples-list">
+        <dt class="code-caption">
+            Supply a callback function to handle the <code><?js= this.event.name ?></code> event as an init option.
+        </dt>
+        <dd class="example-code">
+            <pre class="brush: js">
+            $( ".selector" ).<?js= this.doc.name ?>({
+                <?js= this.event.name ?>: function(event, ui) { ... }
+            });
+            </pre>
+        </dd>
+        <dt class="code-caption">
+            Bind to the <code><?js= this.event.name ?></code> event by type: <code><?js= this.doc.name.substring(3) ?><?js= this.event.name ?></code>.
+        </dt>
+        <dd class="example-code">
+            <pre class="brush: js">
+                $( ".selector" ).bind( "<?js= this.doc.name.substring(3) ?><?js= this.event.name ?>", function(event, ui) {
+                    ...
+                });
+            </pre>
+        </dd>
+    </dl>
+</div>

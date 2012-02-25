@@ -1,0 +1,28 @@
+<?js
+    var doc = this.doc;
+    this.events.forEach(function(n, i) {
+?>  
+    <li id="event-<?js= n.name ?>" class="event">
+        <div class="event-header">
+            <h3 class="event-name"><a href="#event-<?js= n.name ?>"><?js= n.name ?></a></h3>
+            <dl>
+                <dt class="event-type-label">Type:</dt>
+                <dd class="event-type"><?js= doc.name.substring(3) ?><?js= n.name ?></dd>
+            </dl>
+        </div>
+        <div class="event-description">
+            <p><?js= (n.description && n.description.replace( new RegExp( "\n\n", "g" ), '<br><br>')) ?></p>
+            <?js
+                if (n.params && n.params.length) {
+                    print('<h4>Parameters:</h4>');
+                    print( render('params.tmpl', n.params) );
+                } 
+             ?>
+        </div>
+        <?js
+            print(render('event_examples.tmpl',{event:n, doc:doc}));
+        ?>
+    </li>
+<?js  
+    });
+?>

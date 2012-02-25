@@ -1,0 +1,22 @@
+<div class="option-examples">
+    <h4>Code examples</h4>
+    <dl class="option-examples-list">
+        <dt class="code-caption">
+            Initialize a <?js= this.doc.name ?> widget with the <code><?js= this.option.name ?></code> option specified.
+        </dt>
+        <dd class="example-code">
+            <pre class="brush: js">$(".selector").<?js= this.doc.name ?>({ <?js= this.option.name ?>: <?js= this.option.defaultvalue ?> });</pre>
+        </dd>
+        <dt class="code-caption">
+            Get or set the <code><?js= this.option.name ?></code> option, after init.
+        </dt>
+        <dd class="example-code">
+            <pre class="brush: js">
+                //getter
+                var <?js= this.option.name ?> = $(".selector").<?js= this.doc.name ?>("option", "<?js= this.option.name ?>");
+                //setter
+                $(".selector").<?js= this.doc.name ?>("option", "<?js= this.option.name ?>", <?js= this.option.defaultvalue ?>);
+            </pre>
+        </dd>
+    </dl>
+</div>

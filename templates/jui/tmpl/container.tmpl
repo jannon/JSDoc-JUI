@@ -1,0 +1,308 @@
+<?js
+    var files = find({kind: 'file', 'memberof': {'isUndefined': true}}),
+        widget = "ui." + title,
+        currentFile = null;
+    if (files) {
+        for(var i = 0, l = files.length; i < l; i++) {
+            if (files[i].name.indexOf(widget.toLowerCase()) != -1) {
+                currentFile = files[i];
+            }
+        }
+    }
+?>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+		<title><?js= title ?> - documentation</title>
+  
+		<style type="text/css" media="screen">
+			@import "media/css/jsdoc-jui.css";
+			@import "media/css/jquery-ui.css";
+			@import "media/css/ui.theme.css";
+			@import "media/css/shCore.css";
+			@import "media/css/shThemeJUI.css";
+			@import "media/css/demos.css";
+			@import "media/css/<?js= (currentFile && currentFile.meta.filename.replace('js', 'css')) ?>";
+		</style>
+	
+		<script type="text/javascript" src="media/js/jquery.js"></script>
+        <script type="text/javascript" src="media/js/jquery-ui.js"></script>
+        <script type="text/javascript" src="media/js/shCore.js"></script>
+		<script type="text/javascript" src="media/js/shBrushJScript.js"></script>
+		<script type="text/javascript" src="media/js/<?js= (currentFile && currentFile.meta.filename) ?>"></script>
+		<script type="text/javascript" src="media/js/jsdoc-jui.js"></script>
+	</head>
+	<body>
+	    <?js
+	       print(render("header.tmpl", docs));
+	    ?>
+	    <div class="main-container yui3-g normal">
+            <div class="content-top yui3-u-1"></div>
+        
+			<?js
+				docs.forEach(function(doc, i) {
+			?>
+			    <div class="yui3-u-5-24">
+                    <div class="left-nav">
+                        <dl class="widget-nav">
+                            <?js= nav ?>    
+                        </dl>
+                    </div>
+                </div>
+                <div class="yui3-u-19-24">
+                    <div class="main-content">
+    				    <div class="main-header yui3-u-1">
+    					   <h1 class="page-title"><?js= title ?></h1>
+        					<?js
+        						if (doc.classdesc) {
+        							print('<p class="class-description">'+doc.classdesc+'</p>'); 
+        						}
+        
+        						if (doc.variation) {
+        							print('<sup>'+doc.variation+'</sup>'); 
+        						}
+        
+        						if (doc.ancestors && doc.ancestors.length) {
+        							print('<h2 class="ancestors">Ancestry: ');
+        							print('<span class="ancestors">'+doc.ancestors.join(' » ')+'</span>'); 
+        							print(' » '+doc.name);
+        							print('</h2>');
+        						}
+        					?>
+                            <div class="page-info">
+        					    <?js 
+        					        if (currentFile && currentFile.summary && currentFile.version) {
+        					            print(currentFile.summary + " v" + currentFile.version + " documentation");
+        					        }
+        					    ?>
+                            </div>
+                        </div>
+				
+        				<?js
+                            var classes = find({kind: 'class', memberof: doc.longname});
+                            bClasses =  (doc.kind !== 'globalobj' && classes && classes.length) ? true : false;
+                            
+                            var namespaces = find({kind: 'namespace', memberof: doc.longname});
+                            bNamespaces = (doc.kind !== 'globalobj' && namespaces && namespaces.length) ? true : false;
+                             
+                            var properties = find({kind: 'member', memberof: doc.longname});
+                            if (title === 'Globals') {
+                                properties = find({kind: 'member', memberof: {isUndefined: true}});
+                            }
+                            bProperties = (properties && properties.length && properties.forEach) ? true : false;
+                            
+                            if ( doc.augments && doc.augments.length ) {
+                                var augProperties = [];
+                                doc.augments.forEach( function (a) {
+                                    var inner = find({kind: 'member', memberof: a}).slice();
+                                    inner.forEach( function (b) {
+                                        b._augmented = a;
+                                    } );
+                                    augProperties = augProperties.concat( inner );
+                                } );
+                                
+                                properties = [].concat(properties, augProperties);
+                            }
+                            
+                            var widgets = find({kind: 'widget', memberof: doc.longname});
+                            bWidgets =  (doc.kind !== 'globalobj' && widgets && widgets.length) ? true : false;
+                            var optionsObj = find({kind: 'member', memberof: doc.longname, name: 'options'});
+                            var options = optionsObj && optionsObj.length > 0 && find({kind: 'member', memberof: optionsObj[0].longname}) || null;
+                            bOptions = (options && options.length && options.forEach) ? true : false;
+                            var methods = find({kind: 'function', memberof: doc.longname});
+                            if (title === 'Globals') {
+                                methods = find({kind: 'function', memberof: {isUndefined: true}});
+                            }
+                            bMethods = (methods && methods.length && methods.forEach) ? true : false;
+                            /* xxx to do - extended methods */
+                            
+                            var events = find({kind: 'event', memberof: doc.longname}); 
+                            bEvents = (events && events.length && events.forEach) ? true : false;
+                            
+                            var demos = find({kind: 'demo', memberof: doc.longname});
+                            bDemos = (demos && demos.length && demos.forEach) ? true : false;
+                        ?>
+                
+                        <div id="demo-config">
+                            <div id="demo-frame-wrapper">
+                                <p id="demo-link"><a target="_blank" href=""><span class="ui-icon ui-icon-newwin"></span>New window</a></p>
+                                <div id="demo-frame">
+                                    
+                                </div>                                  
+                            </div>
+                            <div id="demo-config-menu">
+                                <div class="demos-nav">
+                                    <h4>Examples</h4>
+                                    <ul>
+                                        <?js
+                                            demos.forEach(function(demo) {
+                                                print('<li>' + linkto(demo.longname, demo.demo.name) + '</li>');
+                                            });
+                                        ?>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="demo-notes"></div>
+                        
+        				<div id="widget-docs">
+        				    <ul>
+        				        <li><a href="#overview">Overview</a></li>
+        				        <li><a href="#options">Options</a></li>
+        				        <li><a href="#events">Events</a></li>
+        				        <li><a href="#methods">Methods</a></li>
+        				        <li><a href="#theming">Theming</a></li>
+        				    </ul>
+        				    <div id="overview">
+        				        <div id="overview-main">
+        				        <?js
+                                    if (doc.kind === 'class') {
+                                        print('<dl>');
+                                        print(render('method.tmpl', doc));
+                                        print('</dl>');
+                                    } else {
+                                        if (doc.description) {
+                                            print('<p class="description">' + (doc.description && doc.description.replace( new RegExp( "\n\n", "g" ), '<br><br>')) + '</p>');
+                                        }
+                                        
+                                        print(render('details.tmpl', doc));
+                                        
+                                        if (doc.examples && doc.examples.length) {
+                                            print('<h3>Example' + (doc.examples.length > 1? 's':'') + '</h3>');
+                                            print( render('examples.tmpl', doc.examples) );
+                                        }
+                                    }
+        
+                                    if (doc.augments && doc.augments.length) {
+                                        print( render('extends.tmpl', doc.augments) );
+                                    }
+                                ?>
+                                </div>
+                                <div id="overview-dependencies">
+                                    <?js
+                                        if (doc.requires && doc.requires.length) {
+                                            print( render('requires.tmpl', doc.requires) );
+                                        }
+                                    ?>
+                                </div>
+                            </div>
+        				    <div id="options">
+        				        <div class="toggle-docs-links"><a class="toggle-docs-detail" href="#">Show details</a> | <a class="toggle-docs-example" href="#">Hide examples</a></div>
+        				        <?js
+                                    if (bOptions) { 
+                                        options.sort( privateSort );
+                                        print('<ul class="options-list">');
+                                        print(render('options.tmpl', {"options": options, "doc": doc}));
+                                        print('</ul>');
+                                    } else {
+                                        print('<span>This widget has no options.</span>');
+                                    }
+                                 ?>
+        				    </div>
+        				    <div id="events">
+        				        <div class="toggle-docs-links"><a class="toggle-docs-detail" href="#">Show details</a> | <a class="toggle-docs-example" href="#">Hide examples</a></div>
+        				        <?js
+                                    if (bEvents) { 
+                                        events.sort( privateSort );
+                                        print('<ul class="events-list">');
+                                        print(render('events.tmpl', {'events': events, "doc": doc}));
+                                        print('</ul>');
+                                    } else {
+                                        print('<span>This widget has no events.</span>');
+                                    }
+                                 ?>
+        				    </div>
+        				    <div id="methods">
+        				        <div class="toggle-docs-links"><a class="toggle-docs-detail" href="#">Show details</a> | <a class="toggle-docs-example" href="#">Hide examples</a> | <a class="toggle-docs-private" href="#">Show private</a></div>
+        				        <?js
+        				            if (bMethods) {
+                                        methods.sort( privateSort );
+                                        print('<ul class="methods-list">');
+                                        print(render('methods.tmpl', {"methods": methods, "doc": doc}));
+                                        print('</ul>');
+                                    }
+                                ?>
+                            </div>
+        				    <div id="theming">
+        				        <p>The <?js= (currentFile && currentFile.summary) ?> plugin uses the jQuery UI CSS Framework to style its look and feel, including colors and background textures. We recommend using the ThemeRoller tool to create and download custom themes that are easy to build and maintain.</p>
+        				        <?js
+        				            var markup = null;
+        				            if (doc.tags && doc.tags.length) {
+        				                for(var i = 0, l = doc.tags.length; i < l; i++) {
+        				                    if (doc.tags[i].title === "samplemarkup") {
+        				                        markup = doc.tags[i];
+        				                        break;
+        				                    }
+        				                }
+        				            }
+        				            if (markup) {
+        				        ?>
+        				        <p>If a deeper level of customization is needed, there are widget-specific classes that can be modified. Sample markup created by the widget can be found below.</p>
+        				        <h3>Sample markup with jQuery UI CSS Framework classes</h3>
+        				        <?js= markup.value ?>
+        				        <p class="theme-note">
+                                    <strong>
+                                      Note: This is a just a sample of markup generated by the plugin.  It is not necessarily the markup you should use to create a widget. See the demos for information on creating a widget. 
+                                    </strong>
+                                </p>
+        				        <?js
+        				            }
+        				        ?>
+        				    </div>
+        				</div>
+        			</div>
+    			</div>
+			<?js 
+				} );
+			?>
+        </div>
+		
+
+		<footer>
+			<?js
+			    if (currentFile && currentFile.summary) {
+					print( currentFile.summary + ": " );
+				}
+				if ( currentFile && currentFile.copyright ) {
+					/* Nasty - can't split on new line? */
+					var a = currentFile.copyright.split('.');
+					print( a[0]+"<br>" );
+				}
+			?>
+
+			Documentation generated by <a href="https://github.com/micmath/JSDoc">JSDoc 3</a> on
+			<?js
+				 var d = new Date();
+				 var th = d.getDate();
+				 if      ( th == 1 ) { th = "st"; }
+				 else if ( th == 2 ) { th = "nd"; }
+				 else if ( th == 3 ) { th = "rd"; }
+				 else                { th = "th"; }
+
+				 var month = d.getMonth();
+				 if      ( month == 0 )  { month = "Jan"; }
+				 else if ( month == 1 )  { month = "Feb"; }
+				 else if ( month == 2 )  { month = "Mar"; }
+				 else if ( month == 3 )  { month = "Apr"; }
+				 else if ( month == 4 )  { month = "May"; }
+				 else if ( month == 5 )  { month = "Jun"; }
+				 else if ( month == 6 )  { month = "Jul"; }
+				 else if ( month == 7 )  { month = "Aug"; }
+				 else if ( month == 8 )  { month = "Sep"; }
+				 else if ( month == 9 )  { month = "Oct"; }
+				 else if ( month == 10 ) { month = "Nov"; }
+				 else                    { month = "Dec"; }
+
+				 var hours = d.getHours()+"";
+				 if ( hours.length == 1 ) { hours = '0'+hours; }
+
+				 var minutes = d.getMinutes()+"";
+				 if ( minutes.length == 1 ) { minutes = '0'+minutes; }
+
+				 print (d.getDate()+th+' '+month+' '+d.getFullYear()+' - '+hours+":"+minutes);
+			?>
+			with the <a href="http://jannon.net/jui/">JUI</a> template.
+		</footer>
+	</body>
+</html>

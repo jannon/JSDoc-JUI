@@ -1,0 +1,29 @@
+<?js
+    var doc = this.doc;
+    this.options.forEach(function(n, i) {
+        var type = "";
+        
+        if (n.type && n.type.names && n.type.names.length) {
+            type = n.type.names[0];
+        }
+?>
+    <li id="option-<?js= n.name ?>" class="option">
+        <div class="option-header">
+            <h3 class="option-name"><a href="#option-<?js= n.name ?>"><?js= n.name ?></a></h3>
+            <dl>
+                <dt class="option-type-label">Type:</dt>
+                <dd class="option-type"><span><?js= type ?></span></dd> 
+                <dt class="option-default-label">Default:</dt>
+                <dd class="option-default"><?js= n.defaultvalue ?></dd>
+            </dl>
+        </div>
+        <div class="option-description">
+            <p><?js= (n.description && n.description.replace( new RegExp( "\n\n", "g" ), '<br><br>')) ?></p>
+        </div>
+        <?js
+            print(render('option_examples.tmpl',{option:n, doc:doc}));
+        ?>  
+    </li>
+<?js
+    });
+?>
