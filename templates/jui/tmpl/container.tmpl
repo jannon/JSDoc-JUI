@@ -120,8 +120,10 @@
                             var events = find({kind: 'event', memberof: doc.longname}); 
                             bEvents = (events && events.length && events.forEach) ? true : false;
                             
+                            order('code');
                             var demos = find({kind: 'demo', memberof: doc.longname});
                             bDemos = (demos && demos.length && demos.forEach) ? true : false;
+                            order('name');
                         ?>
                 
                         <div id="demo-config">

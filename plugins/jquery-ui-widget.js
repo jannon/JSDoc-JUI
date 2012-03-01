@@ -25,7 +25,7 @@ exports.handlers = {
         // console.log("----------");
         // console.log("New Doclet");
         // console.log("----------");
-        // printFields(e);
+        //printFields(e.doclet);
         if (e.doclet.tags) {
             for(var i = 0, l = e.doclet.tags.length; i < l; i++) {
                 var tag = e.doclet.tags[i];
@@ -60,6 +60,8 @@ exports.handlers = {
         } else if (e.doclet.kind == "event") {
             events[e.doclet.longname] = e.doclet;
         }
+        //bump line number up to top level for use with sorting
+        e.doclet.lineno = e.doclet.meta.lineno;
     },
     fileBegin: function(e) {
         widgetName = null;
@@ -318,10 +320,10 @@ function printFields(e, depth) {
             if (typeof e[f] != 'object' || f == "astnode" || f == "node") {
                 if (f == "astnode") {
                     console.log(prefix, f, ":");
-                    debugNodePrint(e.astnode);
+                    debugPrintNode(e.astnode);
                 } else if (f == "node") {
                     console.log(prefix, f, ":");
-                    debugNodePrint(e.node);
+                    debugPrintNode(e.node);
                 } else {
                     console.log(prefix, f, ":", e[f], "(", (typeof e[f]), "),");
                 }

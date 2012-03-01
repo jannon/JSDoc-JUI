@@ -25,7 +25,12 @@
             /* The template for inline widget demos */
             demoTemplate = template.render(fs.readFileSync(__dirname + '/templates/jui/tmpl/demo.tmpl')),
             /* Directory jsdoc was executed from */
-            execDir = String(java.lang.System.getProperty("user.dir"));
+            execDir = String(java.lang.System.getProperty("user.dir")),
+            /* Ordering specs */
+            orderSpecs = {
+                'name': ['longname', 'version', 'since'],
+                'code': ['lineno', 'longname']
+            };
         
         // set up tutorials for helper
         helper.setTutorials(tutorials);
@@ -40,6 +45,7 @@
             }
             partialData.render = arguments.callee;
             partialData.find = find;
+            partialData.order = order;
             partialData.linkto = linkto;
             partialData.tutoriallink = tutoriallink;
             partialData.htmlsafe = htmlsafe;
@@ -76,6 +82,14 @@
             return data.get( data.find(spec) );
         }
         
+        /**
+         * Helper function for ordering doclets
+         * @param spec the orderBy specification
+         */
+        function order(spec) {
+            data.orderBy(orderSpecs[spec]);
+        }
+
         /**
          * Helper function for making strings html safe
          * @param str The string to make safe
@@ -248,7 +262,7 @@
             }
         });
         
-        data.orderBy(['longname', 'version', 'since']);
+        data.orderBy(orderSpecs.name);
 
         // copy static files to outdir
         var delim = String(java.lang.System.getProperty("file.separator")),
@@ -269,10 +283,18 @@
         
         //copy the source files to the outdir
         if (packageInfo && packageInfo.files) {
+            var toJSDir = fs.toDir(outdir + delim + 'media' + delim + 'js'),
+                toCSSDir = fs.toDir(outdir + delim + 'media' + delim + 'css');
             packageInfo.files.forEach(function(fileName) {
-                var toDir = fs.toDir(outdir + delim + 'media' + delim + 'js'),
-                    fromFile = execDir + delim + fileName;
-                fs.copyFile(fromFile, toDir);
+                var fromFile = execDir + delim + fileName;
+                fs.copyFile(fromFile, toJSDir);
+                
+                fromFile = execDir + delim + fileName.replace(/\.js$/, ".css");
+                try {
+                    fs.copyFile(fromFile, toCSSDir);
+                } catch (e) {
+                    //no-op
+                }
             });
         }
         
@@ -309,7 +331,7 @@
          * @param {string} title The title of the section
          * @param {Array.<Doclet>} content the items in the section
          * @param {Object} seen An object keeping track of what items have already been seen
-         * @param {Function=} nameFn An optoinal callback that returns the name to use for section items. By default the item's name is used. It is passed the item.
+         * @param {Function=} nameFn An optional callback that returns the name to use for section items. By default the item's name is used. It is passed the item.
          * @param {Function=} moduleFn An optional callback to 
          */
         function addNavSection(title, content, seen, nameFn, moduleFn) {
@@ -352,13 +374,13 @@
                 addSignatureReturns(doclet);
                 addAttribs(doclet);
             }
-        })
-        
+        });
+
         // do this after the urls have all been generated
         data.forEach(function(doclet) {
             doclet.ancestors = generateAncestry(doclet);
         });
-        
+
         //Building the content for the main documentation navigation
         var nav = '',
             seen = {},
@@ -369,14 +391,14 @@
             namespaces = find({kind: 'namespace'}),
             mixins = find({kind: 'mixin'}),
             globals = find({kind: ['member', 'function', 'constant', 'typedef'], 'memberof': {'isUndefined': true}});
-        
+
         nav += addNavSection("Modules", modules, seen);
         nav += addNavSection("Externals", externals, seen, externalsNameFn);
         nav += addNavSection("Classes", classes, seen, null, onSameModuleName);
         nav += addNavSection("Widgets", widgets, seen, widgetsNameFn, onSameModuleName);
         nav += addNavSection("Namespaces", namespaces, seen);
         nav += addNavSection("Mixins", mixins, seen);
-        
+
         //Tutorials
         if (tutorials.children.length) {
             nav = nav + '<dt>Tutorials</dt>';
@@ -384,7 +406,7 @@
                 nav = nav + '<dd>'+tutoriallink(t.name)+'</dd>';
             });
         }
-        
+
         //Globals
         if (globals.length) {
             nav = nav + '<dt>Global</dt>';
@@ -393,27 +415,27 @@
                 seen[g.longname] = true;
             });
         }
-        
+
         //Generating the actual files
         for (var longname in helper.longnameToUrl) {
             var classes = find({kind: 'class', longname: longname});
             if (classes.length) generate('Class: '+classes[0].name, classes, helper.longnameToUrl[longname], containerTemplate);
-            
+
             var widgets = find({kind: 'widget', longname: longname});
             if (widgets.length) generate(titleCase(widgets[0].name.substring(3)), widgets, helper.longnameToUrl[longname], containerTemplate);
-        
+
             var modules = find({kind: 'module', longname: longname});
             if (modules.length) generate('Module: '+modules[0].name, modules, helper.longnameToUrl[longname], containerTemplate);
-            
+
             var namespaces = find({kind: 'namespace', longname: longname});
             if (namespaces.length) generate('Namespace: '+namespaces[0].name, namespaces, helper.longnameToUrl[longname], containerTemplate);        
-            
+
             var mixins = find({kind: 'mixin', longname: longname});
             if (mixins.length) generate('Mixin: '+mixins[0].name, mixins, helper.longnameToUrl[longname], containerTemplate);        
-        
+
             var externals = find({kind: 'external', longname: longname});
             if (externals.length) generate('External: '+externals[0].name, externals, helper.longnameToUrl[longname], containerTemplate);
-            
+
             var demos = find({kind: 'demo', longname: longname});
             if (demos.length) generate('Demo: ' + demos[0].name, demos, helper.longnameToUrl[longname], demoTemplate);
         }
@@ -423,31 +445,32 @@
         var classes = data.get( data.find({kind: ['class', 'widget']}) );
         if (classes.length) generate('Table of Contents', classes, 'index.html', indexTemplate);
 
-         
+
         function generate(title, docs, filename, template) {
             var data = {
                 title: title,
                 docs: docs,
                 nav: nav,
-                
+
                 // helpers
                 render: render,
                 find: find,
+                order: order,
                 linkto: linkto,
                 tutoriallink: tutoriallink,
                 htmlsafe: htmlsafe,
                 titleCase: titleCase,
                 getFileDoclet: getFileDoclet
             };
-            
+
             var path = outdir + '/' + filename,
                 html = template.call(data, data);
-            
+
             html = helper.resolveLinks(html); // turn {@link foo} into <a href="foodoc.html">foo</a>
-            
+
             fs.writeFileSync(path, html);
         }
-        
+
         function generateTutorial(title, tutorial, filename, template) {
             var data = {
                 title: title,
@@ -455,26 +478,27 @@
                 content: tutorial.parse(),
                 children: tutorial.children,
                 nav: nav,
-                
+
                 // helpers
                 render: render,
                 find: find,
+                order: order,
                 linkto: linkto,
                 tutoriallink: tutoriallink,
                 htmlsafe: htmlsafe,
                 titleCase: titleCase,
                 getWidgetLongName: getWidgetLongName
             };
-            
+
             var path = outdir + '/' + filename,
                 html = template.call(data, data);
-            
+
             // yes, you can use {@link} in tutorials too!
             html = helper.resolveLinks(html); // turn {@link foo} into <a href="foodoc.html">foo</a>
-            
+
             fs.writeFileSync(path, html);
         }
-        
+
         // tutorials can have only one parent so there is no risk for loops
         function saveChildren(node) {
             node.children.forEach(function(child) {
@@ -483,22 +507,22 @@
         }
         saveChildren(tutorials);
     };
-    
+
     function hashToLink(doclet, hash) {
         if ( !/^(#.+)/.test(hash) ) { return hash; }
-        
+
         var url = createLink(doclet);
-        
+
         url = url.replace(/(#.+|$)/, hash);
         return '<a href="'+url+'">'+hash+'</a>';
     }
-    
+
     var hash = require('pajhome/hash'),
         dictionary = require('jsdoc/tag/dictionary'),
         containers = ['class', 'widget', 'module', 'external', 'namespace', 'mixin', 'demo'], // each container gets its own html file
         globalName = 'global',
         fileExtension = '.html';
-    
+
     /**
      * Helper to retrieve the namespace specified by a certain doclet type
      */
@@ -508,7 +532,7 @@
         }
         return '';
     }
-    
+
     function strToFilename(str) {
         if ( /[^$a-z0-9._-]/i.test(str) ) {
             return hash.hex_md5(str).substr(0, 10);
@@ -533,20 +557,20 @@
     /** Turn a doclet into a URL. */
     var createLink = function(doclet) {
         var url = '';
-        
+
         if (containers.indexOf(doclet.kind) < 0) {
             var longname = doclet.longname,
                 filename = strToFilename(doclet.memberof || globalName); // TODO handle name collisions
-            
+
             url = filename + fileExtension + '#' + getNamespace(doclet.kind) + doclet.name;
         }
         else {
             var longname = doclet.longname,
                 filename = strToFilename(longname); // TODO handle name collisions
-            
+
             url = filename + fileExtension;
         }
-        
+
         return url;
     };
 })();
