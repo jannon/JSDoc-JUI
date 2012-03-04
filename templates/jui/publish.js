@@ -221,10 +221,10 @@
         data.remove({undocumented: true, scope: ['global', 'inner']});
         data.remove({undocumented: true, kind: 'member'});
         data.remove({ignore: true});
-        if (!opts.private) { data.remove({access: 'private'}); }
+        if (!opts['private']) { data.remove({access: 'private'}); }
         data.remove({memberof: '<anonymous>'});
         
-        var packageInfo = (find({kind: 'package'}) || []) [0];
+        var packageInfo = (find({kind: 'package'}) || [])[0];
         
         data.forEach(function(doclet) {
             doclet.attribs = '';

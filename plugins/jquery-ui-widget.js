@@ -252,13 +252,13 @@ function nodeToType(type) {
     switch(type) {
         case Token.TRUE:
         case Token.FALSE:
-            return "Boolean";
+            return "boolean";
         case Token.STRING:
-            return "String";
+            return "string";
         case Token.ARRAYLIT:
             return "Array";
         case Token.NUMBER:
-            return "Number";
+            return "number";
         default:
             return "Object";
     }
