@@ -33,8 +33,8 @@ task('install', function (jsdocHome) {
     config = JSON.parse(fs.readFileSync(path.join(jsdoc, 'conf.json'), 'utf8'));
     if (config.plugins.indexOf('plugins/jquery-ui-widget') == -1) {
         config.plugins.push('plugins/jquery-ui-widget');
+        fs.writeFileSync(path.join(jsdoc, 'conf.json'), JSON.stringify(config, null, "    "), 'utf8');
     }
-    fs.writeFileSync(path.join(jsdoc, 'conf.json'), JSON.stringify(config, null, "    "), 'utf8');
-      
+
     process.exit(0);
 });
