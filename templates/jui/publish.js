@@ -286,12 +286,19 @@
             var toJSDir = fs.toDir(outdir + delim + 'media' + delim + 'js'),
                 toCSSDir = fs.toDir(outdir + delim + 'media' + delim + 'css');
             packageInfo.files.forEach(function(fileName) {
-                var fromFile = execDir + delim + fileName;
-                fs.copyFile(fromFile, toJSDir);
-                
-                fromFile = execDir + delim + fileName.replace(/\.js$/, ".css");
+                var fromJSFile = execDir + delim + fileName,
+                    fromCSSFile, parts;
+
+                if (opts.query.cssDir) {
+                    parts = fileName.split(delim);
+                    fromCSSFile = opts.query.cssDir + delim + parts[parts.length - 1].replace(/\.js$/, ".css");
+                } else {
+                    fromCSSFile = execDir + delim + fileName.replace(/\.js$/, ".css");
+                }
+
+                fs.copyFile(fromJSFile, toJSDir);
                 try {
-                    fs.copyFile(fromFile, toCSSDir);
+                    fs.copyFile(fromCSSFile, toCSSDir);
                 } catch (e) {
                     //no-op
                 }
