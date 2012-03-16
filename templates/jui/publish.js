@@ -264,27 +264,29 @@
         
         data.orderBy(orderSpecs.name);
 
-        // copy static files to outdir
+        // copy static files to outDir
         var delim = String(java.lang.System.getProperty("file.separator")),
-            outdir = opts.destination,
+            outDir = opts.destination,
             fromDir = __dirname + delim + 'templates' + delim + 'jui' + delim + 'static',
             staticFiles = fs.ls(fromDir, 3);
 
+        //normalize outDir
+        if (outDir.charAt(outDir.length-1)) { outDir = outDir.slice(0, -1); }
         if (packageInfo && packageInfo.name) {
-            outdir += delim + packageInfo.name + delim + packageInfo.version;
+            outDir += delim + packageInfo.name + delim + packageInfo.version;
         }
-        fs.mkPath(outdir);
-            
+        fs.mkPath(outDir);
+
         staticFiles.forEach(function(fileName) {
-            var toDir = fs.toDir(fileName.replace(fromDir, outdir + delim + 'media'));
+            var toDir = fs.toDir(fileName.replace(fromDir, outDir + delim + 'media'));
             fs.mkPath(toDir);
             fs.copyFile(fileName, toDir);
         });
         
-        //copy the source files to the outdir
+        //copy the source files to the outDir
         if (packageInfo && packageInfo.files) {
-            var toJSDir = fs.toDir(outdir + delim + 'media' + delim + 'js'),
-                toCSSDir = fs.toDir(outdir + delim + 'media' + delim + 'css');
+            var toJSDir = fs.toDir(outDir + delim + 'media' + delim + 'js'),
+                toCSSDir = fs.toDir(outDir + delim + 'media' + delim + 'css');
             packageInfo.files.forEach(function(fileName) {
                 var fromJSFile = fileName,
                     fromCSSFile = "", parts;
@@ -474,7 +476,7 @@
                 getFileDoclet: getFileDoclet
             };
 
-            var path = outdir + '/' + filename,
+            var path = outDir + '/' + filename,
                 html = template.call(data, data);
 
             html = helper.resolveLinks(html); // turn {@link foo} into <a href="foodoc.html">foo</a>
@@ -501,7 +503,7 @@
                 getWidgetLongName: getWidgetLongName
             };
 
-            var path = outdir + '/' + filename,
+            var path = outDir + '/' + filename,
                 html = template.call(data, data);
 
             // yes, you can use {@link} in tutorials too!
