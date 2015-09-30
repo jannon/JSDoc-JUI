@@ -149,7 +149,7 @@ including the sample markup provided
 ### Options ###
 
 You don't really need a comment for the options object itself, since the options object is a standard 
-jQuery UI convention.  You can include one, but it doesn't get shown anyhwere in the documentation.
+jQuery UI convention.  You can include one, but it doesn't get shown anywhere in the documentation.
 
 Comments for the individual options are used however.  You can provide descriptions.  The default value is 
 pulled automatically from the code, but you can override it if you specify a  ```@default``` tag.
